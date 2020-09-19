@@ -3,12 +3,14 @@
 #include <sys/types.h>
 #include <getopt.h>
 
+#define PR_TARGET 20
+
 int main (int argc, char **argv)
 {
   pid_t pid;
-  int nfound, ncount, opt;
-  nfound = 0;
-  ncount = 0;
+  int nfound, pr_count, pr_limit, opt;
+  pr_count = 0;
+  pr_limit = 0;
 
   // Parse command line to ensure n-flag was used and store value of n passed
   while ((opt = getopt(argc, argv, "n:")) != -1)
@@ -16,42 +18,54 @@ int main (int argc, char **argv)
     switch (opt)
     {
     case 'n':
-      nfound = 1;
-      ncount = atoi(optarg);
+      pr_limit = atoi(optarg);
       break;
     }
   }
 
   // If no n-flag was used error out
-  if (nfound == 0)
+  if (pr_limit == 0)
   {
-    perror("Error: ");
+    perror("Error: No -n flag was used to specify the limit of processes");
     return -1;
   }
 
   // If n was specified as greater than 20 error out
-  if (ncount > 20)
+  if (pr_limit > 20)
   {
-    perror("Error: ");
+    perror("Error: Limit of process was specified was too large");
     return -1;
   }
-
-  pid = fork();
-  // If fork failed
-  if (pid < 0)
+  
+  for (int i = 0; i < PR_TARGET; i++)
   {
-    perror("Fork failed - ");
-    exit(1);
-  }
-  // Child process
-  if (pid == 0)
-  {
-    char* args[] = { "./testsim", "1", "2", NULL};
-    execv(args[0], args);
-  }
+    pid = fork();
+   
+    pr_count++;
+    printf("PROCESSES RUNNING: %i\n", pr_count);
 
-  wait(NULL);
-  printf("Parent waited for child");
+    // If fork failed
+    if (pid < 0)
+    {
+      perror("Fork failed - ");
+      exit(1);
+    }
+
+    // Child process
+    if (pid == 0)
+    {
+      char* args[] = { "./testsim", "1", "2", NULL};
+      execv(args[0], args);
+    }
+
+    // Parent process
+    if (pr_count == pr_limit)
+    {
+      wait();
+      pr_count--;
+      printf("Parent waited for child...\n");
+    }
+  }
 
   return 1;
 }
