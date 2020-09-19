@@ -1,13 +1,11 @@
-C = gcc
-CFLAGS  = -g -Wall
+TARGETS = proc_fan testsim
+CC = gcc
+CFLAGS  = -g -Wall -std=c99
 
-default: proc_fan
+all: clean $(TARGETS)
 
-proc_fan:  main.o 
-	$(CC) $(CFLAGS) -o proc_fan main.o
-
-main.o:  main.c
-	$(CC) $(CFLAGS) -c main.c
+$(TARGETS):
+	$(CC) $(CFLAGS) $@.c -o $@
 
 clean: 
-	$(RM) proc_fan *.o *~
+	rm -f $(TARGETS)
