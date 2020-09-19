@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
 #include <getopt.h>
 
 int main (int argc, char **argv)
 {
+  pid_t pid;
   int nfound, ncount, opt;
   nfound = 0;
   ncount = 0;
@@ -33,7 +36,22 @@ int main (int argc, char **argv)
     return -1;
   }
 
-  printf("nfound: %d // ncount: %d", nfound, ncount);
+  pid = fork();
+  // If fork failed
+  if (pid < 0)
+  {
+    perror("Fork failed - ");
+    exit(1);
+  }
+  // Child process
+  if (pid == 0)
+  {
+    char* args[] = { "./testsim", "1", "2", NULL};
+    execv(args[0], args);
+  }
+
+  wait(NULL);
+  printf("Parent waited for child");
 
   return 1;
 }
