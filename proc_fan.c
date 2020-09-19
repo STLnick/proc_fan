@@ -1,16 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <getopt.h>
 
 #define PR_TARGET 20
 
+void createArgs (char **args, char str[]);
+
 int main (int argc, char **argv)
 {
-  pid_t pid;
-  int nfound, pr_count, pr_limit, opt;
-  pr_count = 0;
-  pr_limit = 0;
+  pid_t pid; // Holds pid from fork to determine child or parent
+
+  FILE *fp; // File pointer to read from inputs.data
+  char command_str[12]; // Holds a line read from inputs.data
+  char *args[3]; // Custom args array to exec built from command_str
+
+  int pr_count, pr_limit, opt;
+  pr_count = 0; // Number of running children processes
+  pr_limit = 0; // Limit of children allowed to run at once
 
   // Parse command line to ensure n-flag was used and store value of n passed
   while ((opt = getopt(argc, argv, "n:")) != -1)
@@ -35,6 +43,15 @@ int main (int argc, char **argv)
   {
     perror("Error: Limit of process was specified was too large");
     return -1;
+  }
+
+  // Open inputs.data file for command inputs
+  fp = fopen("./inputs.data", "r");
+  while (fgets(command_str, 13, fp) != NULL)
+  {
+    printf(":%s", command_str);
+    createArgs(args, command_str);
+    printf("%s, %s, %s\n", args[0], args[1], args[2]);
   }
   
   for (int i = 0; i < PR_TARGET; i++)
@@ -68,4 +85,24 @@ int main (int argc, char **argv)
   }
 
   return 1;
+}
+
+void createArgs (char **args, char str[])
+{
+  char delim[] = " ";
+  int args_index = 0;
+
+  char *ptr = strtok(str, delim);
+
+  args[args_index] = ptr;
+
+  args_index++;
+
+  while (args_index < 3)
+  {
+    ptr = strtok(NULL, delim);
+    args[args_index] = ptr;
+    args_index++;
+  }
+  printf("createArgs called...");
 }
