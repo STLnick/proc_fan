@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include <getopt.h>
 
+void createArgs(char **args, char *str);
+
 int main (int argc, char **argv)
 {
   pid_t pid; // Holds pid from fork to determine child or parent
@@ -47,11 +49,6 @@ int main (int argc, char **argv)
   
   while(fgets(buf, 32, stdin))
   {
-    printf("%s\n", buf);
-  }
-
-  for (int i = 0; i < pr_target; i++)
-  {
     pid = fork();
    
     pr_count++; // Increment number of child processes running
@@ -63,11 +60,14 @@ int main (int argc, char **argv)
       exit(1);
     }
 
-    char* args[] = { "./testsim",
-        "2",
-        "3",
-        NULL
-    };
+    //char* args[] = { "./testsim",
+    //    "2",
+    //    "3",
+    //    NULL
+    //};
+    
+    char* args[3];
+    createArgs(args, buf);
     
     // Child process
     if (pid == 0)
@@ -87,4 +87,23 @@ int main (int argc, char **argv)
   wait(NULL);
 
   return 1;
+}
+
+void createArgs(char **args, char *str)
+{
+  char delim[] = " ";
+  int args_index = 0;
+
+  char *ptr = strtok(str, delim);
+
+  args[args_index] = ptr;
+
+  args_index++;
+
+  while (args_index < 3)
+  {
+    ptr = strtok(NULL, delim);
+    args[args_index] = ptr;
+    args_index++;
+  }
 }
