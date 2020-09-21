@@ -45,13 +45,31 @@ int main (int argc, char **argv)
   // Get user input and build commands
   char buf[32];
   bool quit_flag = false;
+  char* inputs[30];
+  int num_inputs = 0;
+
   printf("Input commands to fork and exec:\n");
   printf("(Type q or Q to end input)\n");
+
   do {
     fgets(buf, 32, stdin);
-    if (buf[0] == 'q' || buf[0] == 'Q')
+    if (buf[0] == 'q' || buf[0] == 'Q') {
         quit_flag = true;
+    } else {
+        char *str;
+        str = (char *) malloc(32);
+        strcpy(str, buf);
+        printf("Testing str: %s ", str);
+        printf("%p\n", &str);
+        inputs[num_inputs] = str;
+        num_inputs++;
+    }
   } while (quit_flag == false);
+
+  // Testing inputs array
+  for (int i = 0; i < num_inputs; i++) {
+      printf("Input %i: %s\n", i, inputs[i]);
+  }
 
   // While there is lines to read from file continue to fork and exec
   for (int i = 0; i < pr_target; i++)
