@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -40,6 +41,17 @@ int main (int argc, char **argv)
     perror("Error: Limit of process was specified was too large");
     return -1;
   }
+
+  // Get user input and build commands
+  char buf[32];
+  bool quit_flag = false;
+  printf("Input commands to fork and exec:\n");
+  printf("(Type q or Q to end input)\n");
+  do {
+    fgets(buf, 32, stdin);
+    if (buf[0] == 'q' || buf[0] == 'Q')
+        quit_flag = true;
+  } while (quit_flag == false);
 
   // While there is lines to read from file continue to fork and exec
   for (int i = 0; i < pr_target; i++)
