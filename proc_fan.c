@@ -3,21 +3,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <getopt.h>
+#include <unistd.h>
 
-void createArgs(char **args, char *str);
+void createargs(char **args, char *str);
 
 int main (int argc, char **argv)
 {
   pid_t pid; // Holds pid from fork to determine child or parent
 
-  int pr_count, pr_limit, opt;
+  int pr_count, pr_limit, opt, status;
   pr_count = 0; // Number of running children processes
-  pr_limit = 0; // Limit of children allowed to run at once
-
-  // TODO: Remove these testing variables and allow user to type in commands
-  // to run, wait until they're done then start fork/exec-ing
-  int pr_target = 20; // Number of processes to run in total
+  pr_limit = 0; // Limit of processes to run concurrently
 
   // Parse command line to ensure n-flag was used and store value of n passed
   while ((opt = getopt(argc, argv, "n:")) != -1)
@@ -60,39 +58,35 @@ int main (int argc, char **argv)
       exit(1);
     }
 
-    //char* args[] = { "./testsim",
-    //    "2",
-    //    "3",
-    //    NULL
-    //};
-    
-    char* args[3];
-    createArgs(args, buf);
-    
+    char *args[3];
+    createargs(args, buf);
+   
     // Child process
     if (pid == 0)
     {
       execv(args[0], args);
+      perror("Child failed to exec command!");
     }
 
     // Parent process
     if (pr_count == pr_limit)
     {
-      wait();
+      wait(&status);
       pr_count--;
       printf("Parent waited for child...\n");
     }
   }
 
+  // Wait for remaining children processes to finish
   wait(NULL);
 
-  return 1;
+  return 0;
 }
 
-void createArgs(char **args, char *str)
+void createargs(char **args, char *str)
 {
-  char delim[] = " ";
-  int args_index = 0;
+  char delim[] = " "; // Separate strings by spaces
+  int args_index = 0; // Index to build custom args
 
   char *ptr = strtok(str, delim);
 
@@ -100,10 +94,10 @@ void createArgs(char **args, char *str)
 
   args_index++;
 
-  while (args_index < 3)
+  while ((ptr = strtok(NULL, delim)) != NULL)
   {
-    ptr = strtok(NULL, delim);
     args[args_index] = ptr;
     args_index++;
   }
+  args[args_index] = '\0'; // Explicitly add null terminator to end of new args array
 }
