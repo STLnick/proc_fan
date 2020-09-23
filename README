@@ -2,3 +2,22 @@ OS Project 1
 Process fan (proc_fan)
 
 GitHub repo: https://github.com/STLnick/proc_fan
+
+To run the program:
+First run 'make' to build 'proc_fan' and 'testsim'
+
+To execute with the sample data file run:
+
+./proc_fan -n 3 < inputs.data
+
+Where '3' is the limit of processes to run concurrently and 'inputs.data' is the file input to redirect to 'proc_fan'.
+
+
+What Works:
+The program 'proc_fan' successfully forks and execs different processes allowing only the specified amount from
+the command line argument to run concurrently. 'perror' is used in multiple places to output meaningful error messages
+for the user upon an error.
+
+
+What Doesn't Work:
+Running commands other than 'testsim'.
