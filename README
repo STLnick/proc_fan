@@ -1,6 +1,7 @@
 OS Project 1
 Process fan (proc_fan)
 
+Version Control:
 GitHub repo: https://github.com/STLnick/proc_fan
 
 To run the program:
@@ -20,4 +21,10 @@ for the user upon an error.
 
 
 What Doesn't Work:
-Running commands other than 'testsim'.
+Running commands other than 'testsim'. There are 20 lines of commands to run 'testsim' which the program does correctly.
+However, when attempting to use other commands, specifically the one tried was 'ls', I was unsuccessful.
+I'm not positive if it's due to my choice of 'execv' versus 'execvp'. I attempted both but was unsucessful with 'ls'.
+
+
+Uncertainty:
+I wasn't sure of the logging needed referred to in the project pdf. All my commits are on GitHub of course.
